@@ -1,15 +1,10 @@
 "use client";
 
-import { useTRPC } from "@/trpc/client";
-import { useQuery } from "@tanstack/react-query";
-
 export const HomeView =  () => {
-  const trpc = useTRPC();
-  const { data } = useQuery(trpc.hello.queryOptions({ text: "JOSE" }));
 
   return (
     <div>
-      <pre>{JSON.stringify(data, null, 2)}</pre>
+      HOME VIEW
     </div>
   );
 };
