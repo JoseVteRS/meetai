@@ -21,10 +21,13 @@ export const agentsRouter = createTRPCRouter({
     )
     .query(async ({ input, ctx }) => {
       const [existingAgent] = await db
-        .select()
+        .select({
+          meetingCount: sql<number>`4`,
+          ...getTableColumns(agents)
+        })
         .from(agents)
         .where(
-          and(eq(agents.userId, ctx.auth.user.id), eq(agents.id, input.id))
+          and(eq(agents.id, input.id), eq(agents.userId, ctx.auth.user.id))
         );
 
       if (!existingAgent) {
