@@ -1,12 +1,8 @@
 import { db } from "@/db";
 import { agents } from "@/db/schema";
-import {
-  baseProcedure,
-  createTRPCRouter,
-  protectedProcedure,
-} from "@/trpc/init";
+import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import { TRPCError } from "@trpc/server";
-import { eq } from "drizzle-orm";
+import { and, eq, getTableColumns } from "drizzle-orm";
 import { z } from "zod";
 import { agentsInsertSchema } from "../schemas";
 
@@ -17,11 +13,15 @@ export const agentsRouter = createTRPCRouter({
         id: z.string(),
       })
     )
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
       const [existingAgent] = await db
-        .select()
+        .select({
+          ...getTableColumns(agents),
+        })
         .from(agents)
-        .where(eq(agents.id, input.id));
+        .where(
+          and(eq(agents.userId, ctx.auth.user.id), eq(agents.id, input.id))
+        );
 
       if (!existingAgent) {
         throw new TRPCError({
@@ -33,8 +33,11 @@ export const agentsRouter = createTRPCRouter({
       return existingAgent;
     }),
 
-  getMany: protectedProcedure.query(async () => {
-    const data = await db.select().from(agents);
+  getMany: protectedProcedure.query(async ({ ctx }) => {
+    const data = await db
+      .select()
+      .from(agents)
+      .where(eq(agents.userId, ctx.auth.user.id));
     return data;
   }),
 
