@@ -4,18 +4,18 @@ import { GeneratedAvatar } from "@/components/generated-avatar";
 import { Badge } from "@/components/ui/badge";
 import { ColumnDef } from "@tanstack/react-table";
 import {
-    CornerDownRightIcon,
-    CornerRightDown,
-    CornerRightDownIcon,
-    CornerRightUpIcon,
-    VideoIcon,
+  CornerDownRightIcon,
+  CornerRightDown,
+  CornerRightDownIcon,
+  CornerRightUpIcon,
+  VideoIcon,
 } from "lucide-react";
-import { AgentGetOne } from "../../types";
+import { AgentsGetMany } from "../../types";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 
-export const columns: ColumnDef<AgentGetOne>[] = [
+export const columns: ColumnDef<AgentsGetMany[number]>[] = [
   {
     accessorKey: "name",
     header: "Agent name",
@@ -44,9 +44,12 @@ export const columns: ColumnDef<AgentGetOne>[] = [
     header: "Meetings",
     cell: ({ row }) => {
       return (
-        <Badge variant="outline" className="flex items-center gap-x-2 [&>svg]:size-4">
+        <Badge
+          variant="outline"
+          className="flex items-center gap-x-2 [&>svg]:size-4"
+        >
           <VideoIcon className="text-blue-700" />
-          5 meetings
+          {row.original.meetingCount} {row.original.meetingCount === 1 ? "meeting" : "meetings"}
         </Badge>
       );
     },
