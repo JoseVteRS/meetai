@@ -15,7 +15,7 @@ import { AgentsGetMany } from "../../types";
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 
-export const columns: ColumnDef<AgentsGetMany[number]>[] = [
+export const columns: ColumnDef<AgentsGetMany["items"][number]>[] = [
   {
     accessorKey: "name",
     header: "Agent name",
@@ -23,7 +23,7 @@ export const columns: ColumnDef<AgentsGetMany[number]>[] = [
       return (
         <div className="flex flex-col gap-y-1">
           <div className="flex items-center gap-x-2">
-            <GeneratedAvatar seed={row.original.id} className="size-6" />
+            <GeneratedAvatar seed={row.original.name} variant="botttsNeutral" className="size-6" />
             <span className="font-semibold capitalize">
               {row.original.name}
             </span>
