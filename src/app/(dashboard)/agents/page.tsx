@@ -21,16 +21,15 @@ interface PageProps {
 }
 
 export default async function Page({ searchParams }: PageProps) {
-  const filters = await loadSearchParams(searchParams);
-
   const session = await auth.api.getSession({
     headers: await headers(),
   });
-
+  
   if (!session) {
     redirect("/sign-in");
   }
-
+  
+  const filters = await loadSearchParams(searchParams);
   const queryClient = getQueryClient();
   void queryClient.prefetchQuery(trpc.agents.getMany.queryOptions({
     ...filters
