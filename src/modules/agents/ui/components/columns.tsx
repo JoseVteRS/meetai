@@ -5,9 +5,6 @@ import { Badge } from "@/components/ui/badge";
 import { ColumnDef } from "@tanstack/react-table";
 import {
   CornerDownRightIcon,
-  CornerRightDown,
-  CornerRightDownIcon,
-  CornerRightUpIcon,
   VideoIcon,
 } from "lucide-react";
 import { AgentsGetMany } from "../../types";
@@ -15,7 +12,7 @@ import { AgentsGetMany } from "../../types";
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 
-export const columns: ColumnDef<AgentsGetMany["items"][number]>[] = [
+export const columns: ColumnDef<AgentsGetMany[number]>[] = [
   {
     accessorKey: "name",
     header: "Agent name",
