@@ -50,7 +50,7 @@ export const columns: ColumnDef<MeetingsGetMany[number]>[] = [
       return (
         <div className="flex flex-col gap-y-1">
           <span className="font-semibold capitalize">
-            {row.original.agent.name}
+            {row.original.name}
           </span>
 
           <div className="flex items-center gap-x-2">
@@ -58,6 +58,7 @@ export const columns: ColumnDef<MeetingsGetMany[number]>[] = [
               <CornerDownRightIcon className="size-3 text-muted-foreground" />
               <span>{row.original.agent.name}</span>
             </div>
+            
             <GeneratedAvatar
               variant="botttsNeutral"
               seed={row.original.agent.name}
