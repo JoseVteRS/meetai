@@ -1,18 +1,34 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from "@/constants";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { PlusIcon, XCircleIcon } from "lucide-react";
 import { useState } from "react";
+import { useMeetingsFilters } from "../../hooks/use-meetings-filters";
+import { AgentIdFilter } from "./agent-id-filter";
+import { MeetingsSearchFilters } from "./meetings-search-filters";
 import { NewMeetingDialog } from "./new-meeting-dialog";
-
+import { StatusFilter } from "./status-filter";
 
 export const MeetingsListHeader = () => {
+  const [filters, setFilters] = useMeetingsFilters();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const isAnyFilterModified =
+    !!filters.status || !!filters.search || !!filters.agentId;
+
+  const onClearFilters = () => {
+    setFilters({
+      status: null,
+      agentId: "",
+      search: "",
+      page: 1,
+    });
+  };
 
   return (
     <>
-    <NewMeetingDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} />
+      <NewMeetingDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} />
       <div className="py-4 px-4 md:px-8 flex flex-col gap-y-4">
         <div className="flex items-center justify-between">
           <h5 className="font-medium text-xl">My Meetings</h5>
@@ -21,9 +37,19 @@ export const MeetingsListHeader = () => {
             New Meeting
           </Button>
         </div>
-        <div className="flex items-center gap-x-2 py-1">
-
-        </div>
+        <ScrollArea>
+          <div className="flex items-center gap-x-2 py-1">
+            <MeetingsSearchFilters />
+            <StatusFilter />
+            <AgentIdFilter />
+            {isAnyFilterModified && (
+              <Button variant="outline" size="icon" onClick={onClearFilters}>
+                <XCircleIcon className="size-4" />
+              </Button>
+            )}
+          </div>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
       </div>
     </>
   );
