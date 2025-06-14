@@ -15,30 +15,29 @@ import { MeetingStatus } from "../types";
 
 export const meetingsRouter = createTRPCRouter({
   getOne: protectedProcedure
-    .input(
-      z.object({
-        id: z.string(),
-      })
-    )
+    .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
-      const [existingMeeting] = await db
-        .select({
-          ...getTableColumns(meetings),
-        })
-        .from(meetings)
-        .where(
-          and(eq(agents.id, input.id), eq(agents.userId, ctx.auth.user.id))
-        );
+    const [existingMeeting] = await db
+      .select({
+        ...getTableColumns(meetings),
+        agent: agents,
+        duration: sql<number>`EXTRACT(EPOCH FROM (ended_at - started_at))`.as("duration"),
+      })
+      .from(meetings)
+      .innerJoin(agents, eq(meetings.agentId, agents.id))
+      .where(
+        and(
+          eq(meetings.id, input.id),
+          eq(meetings.userId, ctx.auth.user.id),
+        )
+      );
 
-      if (!existingMeeting) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Agent not found",
-        });
-      }
+    if (!existingMeeting) {
+      throw new TRPCError({ code: "NOT_FOUND", message: "Meeting not found" });
+    }
 
-      return existingMeeting;
-    }),
+    return existingMeeting;
+  }),
 
   getMany: protectedProcedure
     .input(
@@ -152,5 +151,24 @@ export const meetingsRouter = createTRPCRouter({
       }
 
       return updatedMeeting;
+    }),
+  remove: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      const [deletedMeeting] = await db
+        .delete(meetings)
+        .where(
+          and(eq(meetings.id, input.id), eq(meetings.userId, ctx.auth.user.id))
+        )
+        .returning({ id: meetings.id });
+
+      if (!deletedMeeting) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Meeting not found",
+        });
+      }
+
+      return deletedMeeting;
     }),
 });
